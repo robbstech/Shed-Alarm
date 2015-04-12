@@ -38,7 +38,7 @@ void setup() {
   boolean SirenOn(false); 
 }
 
-boolean prevArmed;
+boolean prevArmed(false);
 
 boolean WantArmed(){
 if (digitalRead(setAlarm)==0)
@@ -66,7 +66,10 @@ void exitDelay(){ //code for exit delay goes here
 }
 
 void Block1A(){
-   if(WantArmed()) {prevArmed=false;} else {Block1B();}
+   if(WantArmed()) {prevArmed=false;
+   lcd.clear();
+   lcd.print("Disarmed!");}
+ else {Block1B();}
 }
 
 void Block1B(){
@@ -80,6 +83,7 @@ void Block1C(){
   lcd.print("Intruder!");
   lcd.setCursor(0,1);
   lcd.print("Scan Tag To Reset");
+  prevArmed=false;
 }
 
 void Block2A(){
@@ -91,10 +95,8 @@ void Block2B(){
   lcd.print("Arming Alarm!");
   lcd.setCursor(0,1);
   lcd.print("Please Exit!");
-  exitDelay();
   digitalWrite(ledRed, HIGH);
   prevArmed=true;
- 
 }
 
 void loop(){
