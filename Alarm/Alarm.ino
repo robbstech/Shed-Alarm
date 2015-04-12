@@ -19,7 +19,6 @@ int setAlarmSwState = HIGH;
 int reedSwState = HIGH;
 
 bool armed = false;
-bool sirenOn = false;
 
 void setup() {
   lcd.begin(16, 2);  // set up the LCD's number of rows and columns:
@@ -54,24 +53,25 @@ void setup() {
   digitalWrite(GREEN_LED_PIN, HIGH);
 }
 
-void setSiren(bool on) {
-  if (on) {
-    digitalWrite(SIREN_PIN, HIGH);
-    sirenOn = true;
-  } else {
-    digitalWrite(SIREN_PIN, LOW);
+void entryDelay() {
+  for (int i = 0; i < 15; i++) {
+    digitalWrite(BUZZER_PIN, !digitalRead(BUZZER_PIN));
+    delay(1000);
   }
+  digitalWrite(BUZZER_PIN, LOW);
 }
 
-void entryDelay() {  // Code for entry delay goes here
-}
-
-void exitDelay() {  // code for exit delay goes here
+void exitDelay() {
+  for (int i = 0; i < 15; i++) {
+    digitalWrite(BUZZER_PIN, !digitalRead(BUZZER_PIN));
+    delay(1000);
+  }
+  digitalWrite(BUZZER_PIN, LOW);
 }
 
 void soundAlarm() {
   entryDelay();
-  setSiren(true);
+  digitalWrite(SIREN_PIN, HIGH);
   lcd.clear();
   lcd.print("Intruder!");
   lcd.setCursor(0, 1);
