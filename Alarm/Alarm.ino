@@ -1,33 +1,45 @@
-// include the library code:
-#include <LiquidCrystal.h>  //Include the LCD Library
+#include <UniversalInput.h>
+#include <UniversalButtons.h>
+#include <LiquidCrystal.h>
 
+UniversalButtons buttons;
 LiquidCrystal lcd(A0, A1, A2, A3, A4, A5);  // Tell LCD to use analog pins
 
 // Outputs
-int GREEN_LED_PIN = 2;
-int YELLOW_LED_PIN = 3;
-int RED_LED_PIN = 4;
-int BUZZER_PIN = 9;
-int SIREN_PIN = 6;
+#define GREEN_LED_PIN 2
+#define YELLOW_LED_PIN 3
+#define RED_LED_PIN 4
+#define BUZZER_PIN 9
+#define SIREN_PIN 6
 
-// Inputs
-int SET_ALARM_SW_PIN = 8;
-int REED_SW_PIN = 5;
+// IDs for buttons
+enum ButtonID { SET_ALARM, REED };
+
+int setAlarmSwState = HIGH;
+int reedSwState = HIGH;
 
 bool prevArmed = false;
 bool sirenOn = false;
 
 void setup() {
   lcd.begin(16, 2);  // set up the LCD's number of rows and columns:
-  pinMode(GREEN_LED_PIN, OUTPUT);  // Set Green LED to Output
+
+  buttons.setDefaultButtonConfig(1, 1);
+
+  buttons.addButton(SET_ALARM, 8);
+  buttons.addButton(REED, 5);
+
+  buttons.setStateCycleCallback(&buttonHandler);
+
+  pinMode(GREEN_LED_PIN, OUTPUT);   // Set Green LED to Output
   pinMode(YELLOW_LED_PIN, OUTPUT);  // Set Green LED to Output
-  pinMode(RED_LED_PIN, OUTPUT);  // Set Green LED to Output
-  pinMode(SET_ALARM_SW_PIN, INPUT_PULLUP);  // Set Alarm Button as INPUT
-  pinMode(BUZZER_PIN, OUTPUT);  // Set buzzer as output
-  pinMode(SIREN_PIN, OUTPUT);  // Set SIREN_PIN to output
-  pinMode(REED_SW_PIN, INPUT_PULLUP);  // Set Reed switch to input
+  pinMode(RED_LED_PIN, OUTPUT);     // Set Green LED to Output
+  pinMode(BUZZER_PIN, OUTPUT);      // Set buzzer as output
+  pinMode(SIREN_PIN, OUTPUT);       // Set SIREN_PIN to output
+
   lcd.print("Security System!");  // Print a message to the LCD.
   delay(1000);
+
   digitalWrite(BUZZER_PIN, HIGH);
   delay(100);
   digitalWrite(BUZZER_PIN, LOW);
@@ -35,27 +47,15 @@ void setup() {
   digitalWrite(BUZZER_PIN, HIGH);
   delay(100);
   digitalWrite(BUZZER_PIN, LOW);
+
   lcd.setCursor(0, 1);
   lcd.print("Scan Tag To Arm!");
+
   digitalWrite(GREEN_LED_PIN, HIGH);
 }
 
-bool WantArmed() {
-  if (digitalRead(SET_ALARM_SW_PIN) == 0)
-    return true;
-  else
-    return false;
-}
-
-bool ReedTrip() {
-  if (digitalRead(REED_SW_PIN) == HIGH)
-    return true;
-  else
-    return false;
-}
-
-void SirenOn(bool boOn) {
-  if (boOn) {
+void SirenOn(bool on) {
+  if (on) {
     digitalWrite(SIREN_PIN, HIGH);
     sirenOn = true;
   } else {
@@ -70,7 +70,7 @@ void exitDelay() {  // code for exit delay goes here
 }
 
 void Block1A() {
-  if (WantArmed()) {
+  if (buttons.getButtonState(SET_ALARM)) {
     prevArmed = false;
     lcd.clear();
     lcd.print("Disarmed!");
@@ -80,7 +80,7 @@ void Block1A() {
 }
 
 void Block1B() {
-  if (ReedTrip()) {
+  if (buttons.getButtonState(REED)) {
     Block1C;
   } else {
     prevArmed = true;
@@ -98,7 +98,7 @@ void Block1C() {
 }
 
 void Block2A() {
-  if (WantArmed())
+  if (buttons.getButtonState(SET_ALARM))
     Block2B();
   else
     prevArmed = false;
@@ -113,7 +113,11 @@ void Block2B() {
   prevArmed = true;
 }
 
+void buttonHandler(buttonid_t id, uint32_t time) {}
+
 void loop() {
+  buttons.poll();
+
   if (prevArmed) {
     Block1A();
   } else {
