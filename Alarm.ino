@@ -76,7 +76,7 @@ void Block1B(){
 void Block1C(){
   entryDelay();
   boolean SirenOn=true;
-  lcd.clear;
+  lcd.clear();
   lcd.print("Intruder!");
   lcd.setCursor(0,1);
   lcd.print("Scan Tag To Reset");
@@ -87,7 +87,7 @@ void Block2A(){
 }
 
 void Block2B(){
-  lcd.clear;
+  lcd.clear();
   lcd.print("Arming Alarm!");
   lcd.setCursor(0,1);
   lcd.print("Please Exit!");
