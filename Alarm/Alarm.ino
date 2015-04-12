@@ -18,7 +18,7 @@ enum ButtonID { SET_ALARM, REED };
 int setAlarmSwState = HIGH;
 int reedSwState = HIGH;
 
-bool prevArmed = false;
+bool armed = false;
 bool sirenOn = false;
 
 void setup() {
@@ -54,7 +54,7 @@ void setup() {
   digitalWrite(GREEN_LED_PIN, HIGH);
 }
 
-void SirenOn(bool on) {
+void setSiren(bool on) {
   if (on) {
     digitalWrite(SIREN_PIN, HIGH);
     sirenOn = true;
@@ -69,58 +69,39 @@ void entryDelay() {  // Code for entry delay goes here
 void exitDelay() {  // code for exit delay goes here
 }
 
-void Block1A() {
-  if (buttons.getButtonState(SET_ALARM)) {
-    prevArmed = false;
-    lcd.clear();
-    lcd.print("Disarmed!");
-  } else {
-    Block1B();
-  }
-}
-
-void Block1B() {
-  if (buttons.getButtonState(REED)) {
-    Block1C;
-  } else {
-    prevArmed = true;
-  }
-}
-
-void Block1C() {
+void soundAlarm() {
   entryDelay();
-  sirenOn = true;
+  setSiren(true);
   lcd.clear();
   lcd.print("Intruder!");
   lcd.setCursor(0, 1);
   lcd.print("Scan Tag To Reset");
-  prevArmed = false;
+  armed = false;
 }
 
-void Block2A() {
-  if (buttons.getButtonState(SET_ALARM))
-    Block2B();
-  else
-    prevArmed = false;
+void arm(bool a) {
+  armed = a;
+  if (armed) {
+    lcd.clear();
+    lcd.print("Arming Alarm!");
+    lcd.setCursor(0, 1);
+    lcd.print("Please Exit!");
+    digitalWrite(RED_LED_PIN, HIGH);
+    armed = true;
+  } else {
+    lcd.clear();
+    lcd.print("Disarmed!");
+  }
 }
 
-void Block2B() {
-  lcd.clear();
-  lcd.print("Arming Alarm!");
-  lcd.setCursor(0, 1);
-  lcd.print("Please Exit!");
-  digitalWrite(RED_LED_PIN, HIGH);
-  prevArmed = true;
+void buttonHandler(buttonid_t id, uint32_t time) {
+  if (id == SET_ALARM) arm(!armed);
 }
-
-void buttonHandler(buttonid_t id, uint32_t time) {}
 
 void loop() {
   buttons.poll();
 
-  if (prevArmed) {
-    Block1A();
-  } else {
-    Block2A();
+  if (armed && buttons.getButtonState(REED)) {
+    soundAlarm();
   }
 }
