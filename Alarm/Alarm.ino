@@ -15,9 +15,6 @@ LiquidCrystal lcd(A0, A1, A2, A3, A4, A5);  // Tell LCD to use analog pins
 // IDs for buttons
 enum ButtonID { SET_ALARM, REED };
 
-int setAlarmSwState = HIGH;
-int reedSwState = HIGH;
-
 bool armed = false;
 
 void setup() {
