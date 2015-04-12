@@ -66,7 +66,11 @@ void exitDelay(){ //code for exit delay goes here
 }
 
 void Block1A(){
-   if(WantArmed()) Block1C(); else prevArmed=true;
+   if(WantArmed()) {prevArmed=false;} else {Block1B();}
+}
+
+void Block1B(){
+  if(ReedTrip()) {Block1C;} else {prevArmed=true;}
 }
 
 void Block1C(){
