@@ -1,107 +1,122 @@
 // include the library code:
-#include <LiquidCrystal.h> //Include the LCD Library
+#include <LiquidCrystal.h>  //Include the LCD Library
 
-LiquidCrystal lcd(A0, A1, A2, A3, A4, A5); //Tell LCD to use analog pins
-//Outputs
-int ledGreen = 2;
-int ledYellow = 3;
-int ledRed = 4;
-int buzz = 9;
-int Siren = 6;
+LiquidCrystal lcd(A0, A1, A2, A3, A4, A5);  // Tell LCD to use analog pins
 
-//Inputs
-int setAlarm = 8;
-int reed = 5;
+// Outputs
+int GREEN_LED_PIN = 2;
+int YELLOW_LED_PIN = 3;
+int RED_LED_PIN = 4;
+int BUZZER_PIN = 9;
+int SIREN_PIN = 6;
 
+// Inputs
+int SET_ALARM_SW_PIN = 8;
+int REED_SW_PIN = 5;
+
+bool prevArmed = false;
+bool sirenOn = false;
 
 void setup() {
-  lcd.begin(16, 2); // set up the LCD's number of rows and columns: 
-  pinMode(ledGreen, OUTPUT); //Set Green LED to Output
-  pinMode(ledYellow, OUTPUT); //Set Green LED to Output
-  pinMode(ledRed, OUTPUT); //Set Green LED to Output
-  pinMode(setAlarm, INPUT_PULLUP); //Set Alarm Button as INPUT
-  pinMode(buzz, OUTPUT); //Set buzzer as output
-  pinMode(Siren, OUTPUT); //Set Siren to output
-  pinMode(reed, INPUT_PULLUP); //Set Reed switch to input
-  lcd.print("Security System!"); //Print a message to the LCD.
+  lcd.begin(16, 2);  // set up the LCD's number of rows and columns:
+  pinMode(GREEN_LED_PIN, OUTPUT);  // Set Green LED to Output
+  pinMode(YELLOW_LED_PIN, OUTPUT);  // Set Green LED to Output
+  pinMode(RED_LED_PIN, OUTPUT);  // Set Green LED to Output
+  pinMode(SET_ALARM_SW_PIN, INPUT_PULLUP);  // Set Alarm Button as INPUT
+  pinMode(BUZZER_PIN, OUTPUT);  // Set buzzer as output
+  pinMode(SIREN_PIN, OUTPUT);  // Set SIREN_PIN to output
+  pinMode(REED_SW_PIN, INPUT_PULLUP);  // Set Reed switch to input
+  lcd.print("Security System!");  // Print a message to the LCD.
   delay(1000);
-  digitalWrite(buzz, HIGH);
+  digitalWrite(BUZZER_PIN, HIGH);
   delay(100);
-  digitalWrite(buzz, LOW);
+  digitalWrite(BUZZER_PIN, LOW);
   delay(100);
-  digitalWrite(buzz, HIGH);
+  digitalWrite(BUZZER_PIN, HIGH);
   delay(100);
-  digitalWrite(buzz, LOW);
-  lcd.setCursor(0,1);
+  digitalWrite(BUZZER_PIN, LOW);
+  lcd.setCursor(0, 1);
   lcd.print("Scan Tag To Arm!");
-  digitalWrite(ledGreen, HIGH);
-  boolean SirenOn(false); 
+  digitalWrite(GREEN_LED_PIN, HIGH);
 }
 
-boolean prevArmed(false);
-
-boolean WantArmed(){
-if (digitalRead(setAlarm)==0)
-            return true; else return false;
+bool WantArmed() {
+  if (digitalRead(SET_ALARM_SW_PIN) == 0)
+    return true;
+  else
+    return false;
 }
 
-boolean ReedTrip(){
-if (digitalRead(reed)==HIGH)
-            return true; else return false;
+bool ReedTrip() {
+  if (digitalRead(REED_SW_PIN) == HIGH)
+    return true;
+  else
+    return false;
 }
 
-void SirenOn(boolean boOn){
-if (boOn) {digitalWrite(Siren,HIGH);
-           boolean SirenOn=true;
-          }
-      else{digitalWrite(Siren,LOW);}
+void SirenOn(bool boOn) {
+  if (boOn) {
+    digitalWrite(SIREN_PIN, HIGH);
+    sirenOn = true;
+  } else {
+    digitalWrite(SIREN_PIN, LOW);
+  }
 }
 
-void entryDelay(){ //Code for entry delay goes here
-  
+void entryDelay() {  // Code for entry delay goes here
 }
 
-void exitDelay(){ //code for exit delay goes here
-  
+void exitDelay() {  // code for exit delay goes here
 }
 
-void Block1A(){
-   if(WantArmed()) {prevArmed=false;
-   lcd.clear();
-   lcd.print("Disarmed!");}
- else {Block1B();}
+void Block1A() {
+  if (WantArmed()) {
+    prevArmed = false;
+    lcd.clear();
+    lcd.print("Disarmed!");
+  } else {
+    Block1B();
+  }
 }
 
-void Block1B(){
-  if(ReedTrip()) {Block1C;} else {prevArmed=true;}
+void Block1B() {
+  if (ReedTrip()) {
+    Block1C;
+  } else {
+    prevArmed = true;
+  }
 }
 
-void Block1C(){
+void Block1C() {
   entryDelay();
-  boolean SirenOn=true;
+  sirenOn = true;
   lcd.clear();
   lcd.print("Intruder!");
-  lcd.setCursor(0,1);
+  lcd.setCursor(0, 1);
   lcd.print("Scan Tag To Reset");
-  prevArmed=false;
+  prevArmed = false;
 }
 
-void Block2A(){
-  if(WantArmed()) Block2B(); else prevArmed=false;
+void Block2A() {
+  if (WantArmed())
+    Block2B();
+  else
+    prevArmed = false;
 }
 
-void Block2B(){
+void Block2B() {
   lcd.clear();
   lcd.print("Arming Alarm!");
-  lcd.setCursor(0,1);
+  lcd.setCursor(0, 1);
   lcd.print("Please Exit!");
-  digitalWrite(ledRed, HIGH);
-  prevArmed=true;
+  digitalWrite(RED_LED_PIN, HIGH);
+  prevArmed = true;
 }
 
-void loop(){
-  
-  if (prevArmed) {Block1A();} else {Block2A();}
-  
+void loop() {
+  if (prevArmed) {
+    Block1A();
+  } else {
+    Block2A();
+  }
 }
-
