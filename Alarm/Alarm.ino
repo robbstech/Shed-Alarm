@@ -26,7 +26,7 @@ void setup() {
   buttons.addButton(SET_ALARM, 8);
   buttons.addButton(REED, 5, 1, 0);
 
-  buttons.setStateCycleCallback(&buttonHandler);
+  buttons.setStateChangeCallback(&buttonHandler);
 
   pinMode(GREEN_LED_PIN, OUTPUT);   // Set Green LED to Output
   pinMode(YELLOW_LED_PIN, OUTPUT);  // Set Green LED to Output
@@ -58,6 +58,7 @@ void entryDelay() {
     delay(1000);
   }
   digitalWrite(BUZZER_PIN, LOW);
+  Serial.println("Entry delay over");
 }
 
 void exitDelay() {
@@ -67,6 +68,7 @@ void exitDelay() {
     delay(1000);
   }
   digitalWrite(BUZZER_PIN, LOW);
+  Serial.println("Exit delay over");
 }
 
 void soundAlarm() {
@@ -97,7 +99,10 @@ void arm(bool a) {
   }
 }
 
-void buttonHandler(buttonid_t id, uint32_t time) {
+void buttonHandler(buttonid_t id, uint8_t state) {
+  if(!state)
+    return;
+    
   if (id == SET_ALARM) arm(!armed);
 }
 
