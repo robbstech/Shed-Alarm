@@ -18,6 +18,7 @@ enum ButtonID { SET_ALARM, REED };
 bool armed = false;
 
 void setup() {
+  Serial.begin(115200);
   lcd.begin(16, 2);  // set up the LCD's number of rows and columns:
 
   buttons.setDefaultButtonConfig(1, 1);
@@ -51,6 +52,7 @@ void setup() {
 }
 
 void entryDelay() {
+  Serial.println("Entry delay");
   for (int i = 0; i < 15; i++) {
     digitalWrite(BUZZER_PIN, !digitalRead(BUZZER_PIN));
     delay(1000);
@@ -59,6 +61,7 @@ void entryDelay() {
 }
 
 void exitDelay() {
+  Serial.println("Exit delay");
   for (int i = 0; i < 15; i++) {
     digitalWrite(BUZZER_PIN, !digitalRead(BUZZER_PIN));
     delay(1000);
@@ -68,6 +71,7 @@ void exitDelay() {
 
 void soundAlarm() {
   entryDelay();
+  Serial.println("Sound alarm");
   digitalWrite(SIREN_PIN, HIGH);
   lcd.clear();
   lcd.print("Intruder!");
@@ -78,13 +82,15 @@ void soundAlarm() {
 
 void arm(bool a) {
   armed = a;
+  Serial.print("Armed: ");
+  Serial.println(armed);
   if (armed) {
     lcd.clear();
     lcd.print("Arming Alarm!");
     lcd.setCursor(0, 1);
     lcd.print("Please Exit!");
     digitalWrite(RED_LED_PIN, HIGH);
-    armed = true;
+    exitDelay();
   } else {
     lcd.clear();
     lcd.print("Disarmed!");
