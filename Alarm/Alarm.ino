@@ -23,7 +23,7 @@ void setup() {
   buttons.setDefaultButtonConfig(1, 1);
 
   buttons.addButton(SET_ALARM, 8);
-  buttons.addButton(REED, 5);
+  buttons.addButton(REED, 5, 1, 0);
 
   buttons.setStateCycleCallback(&buttonHandler);
 
